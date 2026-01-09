@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
-  // Function to fetch activities from API
+    // Function to fetch activities from API
   async function fetchActivities() {
     try {
       const response = await fetch("/activities");
@@ -27,13 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           <div class="activity-card-participants">
             <div class="activity-card-participants-title">Résztvevők:</div>
-            <ul class="activity-card-participants-list">
+              <div class="activity-card-participants-list">
               ${
                 details.participants.length > 0
                   ? details.participants.map(p => `<li>${p}</li>`).join("")
                   : '<li><em>Még nincs jelentkező</em></li>'
               }
-            </ul>
+              </div>
           </div>
         `;
 
@@ -94,3 +94,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize app
   fetchActivities();
 });
+  function renderParticipants(participants) {
+      const list = document.getElementById('participants');
+      list.innerHTML = '';
+      participants.forEach((participant, idx) => {
+          const div = document.createElement('div');
+          div.className = 'participant-row';
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = participant;
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-btn';
+          deleteBtn.title = 'Törlés';
+          deleteBtn.innerHTML = '&#128465;'; // kuka ikon Unicode
+          deleteBtn.onclick = () => unregisterParticipant(idx);
+          div.appendChild(nameSpan);
+          div.appendChild(deleteBtn);
+          list.appendChild(div);
+      });
+  }
+
+  function unregisterParticipant(idx) {
+      if (window.participants && idx >= 0 && idx < window.participants.length) {
+          window.participants.splice(idx, 1);
+          renderParticipants(window.participants);
+      }
+  }
